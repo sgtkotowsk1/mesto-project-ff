@@ -1,4 +1,4 @@
-import '../pages/index.css';
+import './index.css';
 
 
 const cardList = document.querySelector('.places__list');
