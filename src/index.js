@@ -1,30 +1,33 @@
 import './index.css';
-
+import {createCard, deleteCard, initialCards} from './modules/cards.js'
+import {openPopup, closePopup} from './modules/modal.js'
 
 const cardList = document.querySelector('.places__list');
-const cardTemplate = document.querySelector('#card-template').content
 
-const createCard = (card, deleteCard) => {
-    const cardElement = cardTemplate.cloneNode(true);
-    const deleteButton = cardElement.querySelector('.card__delete-button');
-    const cardImageElement = cardElement.querySelector('.card__image');
+const popupEdit = document.querySelector('.popup_type_edit');
+const editProfileButton = document.querySelector('.profile__edit-button');
 
-    cardImageElement.src = card.link
-    cardImageElement.alt = card.name
-    cardElement.querySelector('.card__title').textContent = card.name;
+const popupNewCard = document.querySelector('.popup_type_new-card');
+const profileAddButton = document.querySelector('.profile__add-button');
 
-    deleteButton.addEventListener('click', () => deleteCard(cardElement));
-   
-    return cardElement
-}
+const popupClose = document.querySelectorAll('.popup__close');
 
-function deleteCard(card) {
-    card.remove();
-}
+profileAddButton.addEventListener('click', () => openPopup(popupNewCard));
+editProfileButton.addEventListener('click', () => openPopup(popupEdit));
+
+document.addEventListener('keyup', evt => {
+    if (evt.key === "Escape") {
+        closePopup();
+    }
+})
+
+
+popupClose.forEach((element) => element.addEventListener('click', closePopup));
 
 initialCards.forEach((card) => {
     const cardElement = createCard(card, deleteCard)
     cardList.append(cardElement);
 });
+
 
 
