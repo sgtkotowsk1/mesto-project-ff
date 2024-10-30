@@ -1,6 +1,6 @@
 import './index.css';
 import {createCard, deleteCard, initialCards} from './modules/cards.js'
-import {openPopup, closePopup} from './modules/modal.js'
+import {openPopup, closePopup, checkEscape, checkClickOut, openImagePopup} from './modules/modal.js'
 
 const cardList = document.querySelector('.places__list');
 
@@ -12,20 +12,24 @@ const profileAddButton = document.querySelector('.profile__add-button');
 
 const popupClose = document.querySelectorAll('.popup__close');
 
-profileAddButton.addEventListener('click', () => openPopup(popupNewCard));
-editProfileButton.addEventListener('click', () => openPopup(popupEdit));
+profileAddButton.addEventListener('click', () => {
+    document.addEventListener('keyup', checkEscape);
+    openPopup(popupNewCard);
+});
+editProfileButton.addEventListener('click', () => {
+    document.addEventListener('keyup', checkEscape);
+    openPopup(popupEdit)
+});
 
-document.addEventListener('keyup', evt => {
-    if (evt.key === "Escape") {
-        closePopup();
-    }
+document.addEventListener('click', () => {
+    document.addEventListener('click', checkClickOut)
 })
 
 
 popupClose.forEach((element) => element.addEventListener('click', closePopup));
 
 initialCards.forEach((card) => {
-    const cardElement = createCard(card, deleteCard)
+    const cardElement = createCard(card, deleteCard, openImagePopup)
     cardList.append(cardElement);
 });
 
