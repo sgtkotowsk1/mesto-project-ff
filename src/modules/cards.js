@@ -56,6 +56,7 @@ const createCard = (card, deleteCard) => {
     return cardElement
 }
 
+
 const deleteCard = (card) => card.remove();
     
 
