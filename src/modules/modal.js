@@ -2,7 +2,7 @@ import { createCard, deleteCard, likeCard } from "./cards.js";
 
 export const openPopup = (popup) => {
   popup.classList.add("popup_is-animated");
-  setTimeout(() => popup.classList.add("popup_is-opened"), 100);
+  setTimeout(() => popup.classList.add("popup_is-opened"), 0);
   document.addEventListener("keyup", handleCloseByEscape);
   document.addEventListener("mousedown", handleCloseByOverlay);
 };
@@ -16,7 +16,7 @@ export const closePopup = () => {
       document
         .querySelector(".popup_is-animated")
         .classList.remove("popup_is-animated"),
-    700
+    600
   );
 };
 
