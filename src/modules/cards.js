@@ -1,4 +1,4 @@
-const deleteCard = (evt) => evt.remove();
+const deleteCard = (cardElement) => cardElement.remove();
 
 const likeCard = (evt) =>
   evt.target.classList.toggle("card__like-button_is-active");

@@ -20,24 +20,10 @@ const profileDesription = document.querySelector(".profile__description");
 const userName = editForm.name;
 const userDescription = editForm.description;
 
-editForm.addEventListener("submit", (evt) =>
-  handleFormSubmitEditForm(
-    evt,
-    editForm.name,
-    editForm.description,
-    profileTitle,
-    profileDesription
-  )
-);
+editForm.addEventListener("submit", (evt) => handleFormSubmitEditForm(evt));
+
 addForm.addEventListener("submit", (evt) =>
-  handleFormSubmitAddForm(
-    evt,
-    addForm["place-name"],
-    addForm.link,
-    cardTemplate,
-    cardList,
-    addForm
-  )
+  handleFormSubmitAddForm(evt, addForm["place-name"], addForm.link)
 );
 
 closePopups.forEach((element) => element.addEventListener("click", closePopup));
@@ -76,8 +62,8 @@ const handleFormSubmitAddForm = (evt, placeName, placeLink) => {
     cardTemplate
   );
   cardList.prepend(newCard);
-  addForm.reset();
   closePopup();
+  setTimeout(() => addForm.reset(), 600);
 };
 
 initialCards.forEach((card) => {

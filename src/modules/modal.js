@@ -1,4 +1,4 @@
-const openPopup = (popup) => {
+const openPopup = (popup, addForm) => {
   popup.classList.add("popup_is-animated");
   setTimeout(() => popup.classList.add("popup_is-opened"), 0);
   document.addEventListener("keyup", handleCloseByEscape);
