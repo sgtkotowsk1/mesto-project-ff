@@ -1,4 +1,7 @@
-export { createCard, deleteCard, likeCard };
+const deleteCard = (evt) => evt.remove();
+
+const likeCard = (evt) =>
+  evt.target.classList.toggle("card__like-button_is-active");
 
 const createCard = (
   { name, link },
@@ -26,7 +29,4 @@ const createCard = (
   return cardElement;
 };
 
-const deleteCard = (evt) => evt.remove();
-
-const likeCard = (evt) =>
-  evt.target.classList.toggle("card__like-button_is-active");
+export { createCard, deleteCard, likeCard };
