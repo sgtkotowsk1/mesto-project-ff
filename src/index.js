@@ -1,9 +1,8 @@
 import "./index.css";
 import { createCard, deleteCard, likeCard } from "./modules/cards.js";
 import { openPopup, closePopup } from "./modules/modal.js";
-import { getAllCards, getUserInfo } from "./modules/api.js";
-import {clearValidation, enableValidation} from "./modules/validation.js"
-
+import { getAllCards, getUserInfo, patchUserInfo } from "./modules/api.js";
+import { clearValidation, enableValidation } from "./modules/validation.js";
 
 const cardTemplate = document.querySelector("#card-template").content;
 const cardList = document.querySelector(".places__list");
@@ -23,7 +22,7 @@ const editForm = document.forms["edit-profile"];
 
 const profileTitle = document.querySelector(".profile__title");
 const profileDesription = document.querySelector(".profile__description");
-const profileImage = document.querySelector('.profile__image')
+const profileImage = document.querySelector(".profile__image");
 
 const userName = editForm.name;
 const userDescription = editForm.description;
@@ -35,11 +34,6 @@ addForm.addEventListener("submit", (evt) =>
 );
 
 closePopups.forEach((element) => element.addEventListener("click", closePopup));
-
-
-
-
-
 
 profileAddButton.addEventListener("click", () => {
   openPopup(popupNewCard);
@@ -83,7 +77,8 @@ const openImagePopup = ({ name, link }) => {
 };
 
 const renderCard = (card, cardData) => {
-  const { deleteCard, openImagePopup, likeCard, cardTemplate, cardList } = cardData;
+  const { deleteCard, openImagePopup, likeCard, cardTemplate, cardList } =
+    cardData;
 
   const cardElement = createCard({
     name: card.name,
@@ -97,35 +92,26 @@ const renderCard = (card, cardData) => {
   cardList.append(cardElement);
 };
 
-getUserInfo().then((userInfo) => {
-  profileTitle.textContent = userInfo.name
-  profileDesription.textContent = userInfo.about
-  profileImage.style.backgroundImage = `url(${userInfo.avatar})`;
-  const userId = userInfo._id
-  console.log(userId);
-});
+Promise.all([getAllCards(), getUserInfo()])
+  .then(([allCards, userInfo]) => {
+    allCards.forEach((card) => {
+      renderCard(card, {
+        deleteCard,
+        openImagePopup,
+        likeCard,
+        cardTemplate,
+        cardList,
+      });
+    });
 
-getAllCards().then((cards) => {
-  cards.forEach((card) => {
-    renderCard(card, {
-      deleteCard,
-      openImagePopup,
-      likeCard,
-      cardTemplate,
-      cardList,
-    })
-  });
-}).catch((error) => {
-  console.error("Ошибка загрузки карточек:", error);
-});
-
-// Promise.all([getAllCards(), getUserInfo()]).then(([allCards, userInfo]) => {
-//   profileTitle.textContent = userInfo.name
-//   profileDesription.textContent = userInfo.about
-//   profileImage.style.backgroundImage = `url(${userInfo.avatar})`;
-//   const userId = userInfo._id
-//   console.log(userId);
-// })
+    profileTitle.textContent = userInfo.name;
+    profileDesription.textContent = userInfo.about;
+    profileImage.style.backgroundImage = `url(${userInfo.avatar})`;
+    const userId = userInfo._id;
+    console.log(userId);
+  })
+  .catch((err) => console.error("Ошибка загрузки данных пользователя", err));
+  
 
 const settings = {
   formSelector: ".popup__form",
