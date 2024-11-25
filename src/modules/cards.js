@@ -3,13 +3,14 @@ const deleteCard = (cardElement) => cardElement.remove();
 const likeCard = (evt) =>
   evt.target.classList.toggle("card__like-button_is-active");
 
-const createCard = (
-  { name, link },
+const createCard = ({
+  name,
+  link,
   deleteCard,
   openImagePopup,
   likeCard,
-  cardTemplate
-) => {
+  cardTemplate,
+}) => {
   const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
   const deleteButton = cardElement.querySelector(".card__delete-button");
   const likeButton = cardElement.querySelector(".card__like-button");
@@ -22,8 +23,7 @@ const createCard = (
 
   likeButton.addEventListener("click", likeCard);
 
-  cardImageElement.addEventListener("click", () =>
-    openImagePopup({ name, link })
+  cardImageElement.addEventListener("click", () => openImagePopup({ name, link })
   );
 
   return cardElement;
