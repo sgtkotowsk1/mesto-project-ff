@@ -1,7 +1,11 @@
 const deleteCard = (cardElement) => cardElement.remove();
 
-const likeCard = (evt) =>
+const likeCard = (evt) => {
   evt.target.classList.toggle("card__like-button_is-active");
+
+}
+  
+
 
 const createCard = ({
   name,
@@ -14,6 +18,7 @@ const createCard = ({
   const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
   const deleteButton = cardElement.querySelector(".card__delete-button");
   const likeButton = cardElement.querySelector(".card__like-button");
+  const likeCounter = cardElement.querySelector('.card__like-count');
   const cardImageElement = cardElement.querySelector(".card__image");
   cardImageElement.src = link;
   cardImageElement.alt = name;
