@@ -1,5 +1,5 @@
 import "./index.css";
-import { createCard, deleteCard, likeCard } from "./modules/cards.js";
+import { createCard, deleteCard} from "./modules/cards.js";
 import { openPopup, closePopup } from "./modules/modal.js";
 import { getAllCards, getUserInfo, patchUserInfo, postCard } from "./modules/api.js";
 import { clearValidation, enableValidation } from "./modules/validation.js";
@@ -67,7 +67,7 @@ const handleFormSubmitAddForm = (evt, placeName, placeLink) => {
       link: result.link,
       openImagePopup,
       deleteCard,
-      likeCard,
+      handleLikeClick,
       cardTemplate,
     });
     cardList.prepend(newCard);
@@ -81,7 +81,7 @@ Promise.all([getAllCards(), getUserInfo()])
       renderCard(card, {
         deleteCard,
         openImagePopup,
-        likeCard,
+        handleLikeClick,
         cardTemplate,
         cardList,
       });
@@ -104,21 +104,27 @@ const openImagePopup = ({ name, link }) => {
 
 
 const renderCard = (card, cardData) => {
-  const { deleteCard, openImagePopup, likeCard, cardTemplate, cardList } =
+  const { deleteCard, openImagePopup, handleLikeClick, cardTemplate, cardList } =
     cardData;
   const cardElement = createCard({
     name: card.name,
     link: card.link,
     deleteCard,
     openImagePopup,
-    likeCard,
+    handleLikeClick,
     cardTemplate,
   });
   cardList.append(cardElement);
 };
 
+const handleLikeClick = (evt) => {
+  evt.target.classList.toggle("card__like-button_is-active");
+  const isLiked = button.classList.contains('card__like-button_active');
+}
 
-
+updateLikeStatus().then((res) => {
+  console.log(res)
+})
  
 
 const settings = {

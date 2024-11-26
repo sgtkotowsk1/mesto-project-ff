@@ -73,7 +73,7 @@ const postCard = async (name, link) => {
 const updateLikeStatus = async (cardId, isLiked) => {
   try {
     const method = isLiked ? "DELETE" : "PUT";
-    const response = await fetch(`${PATH}/cards/likes/${cardId}`, {
+    const request = await fetch(`${PATH}/cards/likes/${cardId}`, {
       method,
       headers: {
         authorization,

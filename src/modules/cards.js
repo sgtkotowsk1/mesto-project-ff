@@ -1,9 +1,10 @@
 const deleteCard = (cardElement) => cardElement.remove();
 
-const likeCard = (evt) => {
-  evt.target.classList.toggle("card__like-button_is-active");
 
-}
+
+
+
+
   
 
 
@@ -12,13 +13,12 @@ const createCard = ({
   link,
   deleteCard,
   openImagePopup,
-  likeCard,
+  handleLikeClick,
   cardTemplate,
 }) => {
   const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
   const deleteButton = cardElement.querySelector(".card__delete-button");
   const likeButton = cardElement.querySelector(".card__like-button");
-  const likeCounter = cardElement.querySelector('.card__like-count');
   const cardImageElement = cardElement.querySelector(".card__image");
   cardImageElement.src = link;
   cardImageElement.alt = name;
@@ -26,7 +26,7 @@ const createCard = ({
 
   deleteButton.addEventListener("click", () => deleteCard(cardElement));
 
-  likeButton.addEventListener("click", likeCard);
+  likeButton.addEventListener("click", handleLikeClick);
 
   cardImageElement.addEventListener("click", () => openImagePopup({ name, link })
   );
@@ -34,4 +34,4 @@ const createCard = ({
   return cardElement;
 };
 
-export { createCard, deleteCard, likeCard };
+export { createCard, deleteCard };
