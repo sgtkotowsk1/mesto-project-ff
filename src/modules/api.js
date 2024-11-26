@@ -11,6 +11,7 @@ const getAllCards = async () => {
     return handleRequest(request);
   } catch (err) {
     console.error("Ошибка при запросе:", err);
+    throw err
   }
 };
 
@@ -27,35 +28,67 @@ const getUserInfo = async () => {
     return handleRequest(request);
   } catch (err) {
     console.error("Ошибка при запросе:", err);
+    throw err
   }
 };
 
-const patchUserInfo = async (profileTitle, profileDesription) => {
+const patchUserInfo = async (profileTitle, profileDesсription) => {
   try {
     const request = await fetch(
       "https://nomoreparties.co/v1/wff-cohort-27/users/me",
       {
         method: "PATCH",
         headers: {
-          authorization: "c56e30dc-2883-4270-a59e-b2f7bae969c6",
+          authorization: "8d14c817-82a5-44b1-9a59-f37cb913199d",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: profileTitle,
-          about: profileDesription,
+          about: profileDesсription,
         }),
       }
     );
     return handleRequest(request);
   } catch (err) {
-    console.error("Ошибка при обновлении информации пользователя:", err);
+    console.error("Ошибка при обновлении информации о пользователе:", err);
+    throw err
   }
 };
 
-const handleRequest = (request) => {
+const postCard = async (name, link) => {
+  try {
+    const request = await fetch("https://nomoreparties.co/v1/wff-cohort-27/cards",
+      {
+        method: "POST",
+        headers: {
+          authorization: "8d14c817-82a5-44b1-9a59-f37cb913199d",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name,
+          link: link
+        }),
+      }
+    );
+
+    return handleRequest(request);
+  } catch(err) {
+    console.error("Ошибка при загрузке карточки:", err);
+    throw err;
+  }
+}
+
+const handleRequest = async (request) => {
   if (request.ok) {
-    return request.json();
+    return await request.json();
+  } else {
+    const errorMessage = `Ошибка: ${request.status} - ${request.statusText}`
+    throw new Error(errorMessage)
   }
 };
 
-export { getAllCards, getUserInfo, patchUserInfo };
+
+
+
+
+export { getAllCards, getUserInfo, patchUserInfo, postCard };
