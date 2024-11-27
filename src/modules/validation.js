@@ -75,8 +75,8 @@ const clearValidation = (formElement, settings) => {
 
   const buttonElement = formElement.querySelector(submitButtonSelector);
   if (buttonElement) {
-    buttonElement.classList.add(inactiveButtonClass); // Добавляем класс неактивности
-    buttonElement.disabled = true; // Делаем кнопку неактивной
+    buttonElement.classList.add(inactiveButtonClass);
+    buttonElement.disabled = true; 
   }
 };
 

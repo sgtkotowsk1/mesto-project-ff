@@ -1,7 +1,14 @@
 import "./index.css";
-import { createCard, deleteCard} from "./modules/cards.js";
+import { createCard } from "./modules/cards.js";
 import { openPopup, closePopup } from "./modules/modal.js";
-import { getAllCards, getUserInfo, patchUserInfo, postCard } from "./modules/api.js";
+import {
+  getAllCards,
+  getUserInfo,
+  patchUserInfo,
+  postCard,
+  updateLikeStatus,
+  deleteCard
+} from "./modules/api.js";
 import { clearValidation, enableValidation } from "./modules/validation.js";
 
 const cardTemplate = document.querySelector("#card-template").content;
@@ -47,34 +54,41 @@ editProfileButton.addEventListener("click", () => {
   userDescription.value = profileDesription.textContent;
 });
 
-const handleFormSubmitEditForm = (evt) => {
-  evt.preventDefault();
-  profileTitle.textContent = userName.value;
-  profileDesription.textContent = userDescription.value;
-  patchUserInfo(userName.value, userDescription.value)
-  closePopup();
-};
-
-
-
-const handleFormSubmitAddForm = (evt, placeName, placeLink) => {
-  evt.preventDefault();
-  postCard(placeName.value, placeLink.value).then((result) => {
+const handleFormSubmitEditForm = async (evt) => {
+  try {
     evt.preventDefault();
-    console.log(result);
-    const newCard = createCard({
-      name: result.name,
-      link: result.link,
-      openImagePopup,
-      deleteCard,
-      handleLikeClick,
-      cardTemplate,
-    });
-    cardList.prepend(newCard);
-  })
-  closePopup();
-  
+    profileTitle.textContent = userName.value;
+    profileDesription.textContent = userDescription.value;
+    patchUserInfo(userName.value, userDescription.value);
+    closePopup();
+  } catch (err) {
+    console.error("Ошибка при открытии окна редактирования профиля", err);
+  }
 };
+
+const handleFormSubmitAddForm = async (evt, placeName, placeLink) => {
+  try {
+    evt.preventDefault();
+    postCard(placeName.value, placeLink.value).then((result) => {
+      const newCard = createCard({
+        name: result.name,
+        link: result.link,
+        cardId: result._id,
+        cardLikes: result.likes,
+        openImagePopup,
+        deleteCard,
+        handleLikeClick,
+        cardTemplate,
+        deleteCard,
+      });
+      cardList.prepend(newCard);
+    });
+    closePopup();
+  } catch (err) {
+    console.error("Ошибка при открытии окна загрузки карточки:", err);
+  }
+};
+
 Promise.all([getAllCards(), getUserInfo()])
   .then(([allCards, userInfo]) => {
     allCards.forEach((card) => {
@@ -90,10 +104,8 @@ Promise.all([getAllCards(), getUserInfo()])
     profileTitle.textContent = userInfo.name;
     profileDesription.textContent = userInfo.about;
     profileImage.style.backgroundImage = `url(${userInfo.avatar})`;
-    const userId = userInfo._id;
-    console.log(userId);
   })
-  .catch((err) => console.error("Ошибка загрузки данных пользователя", err));
+  .catch((err) => console.error("Ошибка загрузки данных", err));
 
 const openImagePopup = ({ name, link }) => {
   popupImage.src = link;
@@ -102,13 +114,19 @@ const openImagePopup = ({ name, link }) => {
   openPopup(popupImageContainer);
 };
 
-
 const renderCard = (card, cardData) => {
-  const { deleteCard, openImagePopup, handleLikeClick, cardTemplate, cardList } =
-    cardData;
+  const {
+    deleteCard,
+    openImagePopup,
+    handleLikeClick,
+    cardTemplate,
+    cardList,
+  } = cardData;
   const cardElement = createCard({
     name: card.name,
     link: card.link,
+    cardId: card._id,
+    cardLikes: card.likes,
     deleteCard,
     openImagePopup,
     handleLikeClick,
@@ -117,15 +135,27 @@ const renderCard = (card, cardData) => {
   cardList.append(cardElement);
 };
 
-const handleLikeClick = (evt) => {
-  evt.target.classList.toggle("card__like-button_is-active");
-  const isLiked = button.classList.contains('card__like-button_active');
-}
+const handleLikeClick = async (evt, cardId, cardLikes, likeCountElement) => {
+  const likeButton = evt.target;
+  const isLiked = evt.target.classList.contains("card__like-button_is-active");
+  likeButton.classList.toggle("card__like-button_is-active");
+  try {
+    await updateLikeStatus(cardId, isLiked);
+    if (isLiked) {
+      cardLikes.length--;
+    } else {
+      cardLikes.length++;
+    }
+    likeCountElement.textContent = cardLikes.length;
+  } catch (err) {
+    console.error("Ошибка при выставлении лайка");
+    likeButton.classList.toggle("card__like-button_is-active");
+  }
+};
 
-updateLikeStatus().then((res) => {
-  console.log(res)
-})
- 
+// const deleteCard = async (cardId) => {
+//   await deleteCard(cardId)
+// };
 
 const settings = {
   formSelector: ".popup__form",

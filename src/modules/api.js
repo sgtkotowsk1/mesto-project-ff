@@ -86,6 +86,20 @@ const updateLikeStatus = async (cardId, isLiked) => {
     throw err;
   }
 };
+
+const deleteCard = async (cardId) => {
+  try {
+    method: "DELETE";
+    const request = await fetch(`${PATH}/cards/${cardId}`)
+  }
+  catch(err) {
+    console.err("Не удалось удалить карточку", err)
+  }
+}
+
+
+
+
 const handleRequest = async (request) => {
   if (request.ok) {
     return await request.json();
@@ -95,4 +109,5 @@ const handleRequest = async (request) => {
   }
 };
 
-export { getAllCards, getUserInfo, patchUserInfo, postCard, updateLikeStatus };
+
+export { getAllCards, getUserInfo, patchUserInfo, postCard, updateLikeStatus, deleteCard};
