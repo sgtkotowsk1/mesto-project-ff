@@ -4,10 +4,11 @@ import { openPopup, closePopup } from "./modules/modal.js";
 import {
   getAllCards,
   getUserInfo,
-  patchUserInfo,
+  updateUserInfo,
   postCard,
   updateLikeStatus,
-  deleteCard
+  deleteCard,
+  updateUserAvatar,
 } from "./modules/api.js";
 import { clearValidation, enableValidation } from "./modules/validation.js";
 
@@ -59,7 +60,7 @@ const handleFormSubmitEditForm = async (evt) => {
     evt.preventDefault();
     profileTitle.textContent = userName.value;
     profileDesription.textContent = userDescription.value;
-    patchUserInfo(userName.value, userDescription.value);
+    updateUserInfo(userName.value, userDescription.value);
     closePopup();
   } catch (err) {
     console.error("Ошибка при открытии окна редактирования профиля", err);
@@ -74,12 +75,13 @@ const handleFormSubmitAddForm = async (evt, placeName, placeLink) => {
         name: result.name,
         link: result.link,
         cardId: result._id,
-        cardLikes: result.likes,
+        cardLike: result.likes,
+        cardOwner: result.owner,
+        currentUserId: result.owner["_id"],
         openImagePopup,
-        deleteCard,
+        handleRemoveCard,
         handleLikeClick,
         cardTemplate,
-        deleteCard,
       });
       cardList.prepend(newCard);
     });
@@ -90,22 +92,49 @@ const handleFormSubmitAddForm = async (evt, placeName, placeLink) => {
 };
 
 Promise.all([getAllCards(), getUserInfo()])
-  .then(([allCards, userInfo]) => {
+  .then(([allCards, {name, about: description, avatar, _id: currentUserId}]) => {
     allCards.forEach((card) => {
       renderCard(card, {
-        deleteCard,
+        handleRemoveCard,
         openImagePopup,
         handleLikeClick,
         cardTemplate,
         cardList,
+        currentUserId
       });
     });
 
-    profileTitle.textContent = userInfo.name;
-    profileDesription.textContent = userInfo.about;
-    profileImage.style.backgroundImage = `url(${userInfo.avatar})`;
+    profileTitle.textContent = name;
+    profileDesription.textContent = description;
+    profileImage.style.backgroundImage = `url(${avatar})`;
+    
   })
   .catch((err) => console.error("Ошибка загрузки данных", err));
+
+const renderCard = (card, cardData) => {
+  const {
+    handleRemoveCard,
+    openImagePopup,
+    handleLikeClick,
+    cardTemplate,
+    cardList,
+    currentUserId
+  } = cardData;
+  const cardElement = createCard({
+    name: card.name,
+    link: card.link,
+    cardId: card._id,
+    cardLike: card.likes,
+    cardOwner: card.owner,
+    handleRemoveCard,
+    openImagePopup,
+    handleLikeClick,
+    cardTemplate,
+    currentUserId
+  });
+  cardList.append(cardElement);
+};
+
 
 const openImagePopup = ({ name, link }) => {
   popupImage.src = link;
@@ -114,48 +143,32 @@ const openImagePopup = ({ name, link }) => {
   openPopup(popupImageContainer);
 };
 
-const renderCard = (card, cardData) => {
-  const {
-    deleteCard,
-    openImagePopup,
-    handleLikeClick,
-    cardTemplate,
-    cardList,
-  } = cardData;
-  const cardElement = createCard({
-    name: card.name,
-    link: card.link,
-    cardId: card._id,
-    cardLikes: card.likes,
-    deleteCard,
-    openImagePopup,
-    handleLikeClick,
-    cardTemplate,
-  });
-  cardList.append(cardElement);
-};
-
-const handleLikeClick = async (evt, cardId, cardLikes, likeCountElement) => {
+const handleLikeClick = async (evt, cardId, likeCountElement) => {
   const likeButton = evt.target;
-  const isLiked = evt.target.classList.contains("card__like-button_is-active");
-  likeButton.classList.toggle("card__like-button_is-active");
+  const isLiked = likeButton.classList.contains("card__like-button_is-active");
+
   try {
-    await updateLikeStatus(cardId, isLiked);
-    if (isLiked) {
-      cardLikes.length--;
-    } else {
-      cardLikes.length++;
-    }
-    likeCountElement.textContent = cardLikes.length;
-  } catch (err) {
-    console.error("Ошибка при выставлении лайка");
+    const cardData = await updateLikeStatus(cardId, isLiked);
     likeButton.classList.toggle("card__like-button_is-active");
+    likeCountElement.textContent = cardData.likes.length
+    
+  } catch (err) {
+    console.error("Ошибка при выставлении лайка", err);
   }
 };
 
-// const deleteCard = async (cardId) => {
-//   await deleteCard(cardId)
-// };
+const handleRemoveCard = async (cardId, cardElement) => {
+   try {
+    await deleteCard(cardId)
+    cardElement.remove();
+   }
+   catch(err) {
+    console.error("Ошибка загрузки данных", err);
+   }
+};
+
+
+
 
 const settings = {
   formSelector: ".popup__form",

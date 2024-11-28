@@ -29,7 +29,7 @@ const getUserInfo = async () => {
   }
 };
 
-const patchUserInfo = async (profileTitle, profileDesсription) => {
+const updateUserInfo = async (profileTitle, profileDesсription) => {
   try {
     const request = await fetch(`${PATH}/users/me`, {
       method: "PATCH",
@@ -87,27 +87,49 @@ const updateLikeStatus = async (cardId, isLiked) => {
   }
 };
 
+
 const deleteCard = async (cardId) => {
   try {
-    method: "DELETE";
-    const request = await fetch(`${PATH}/cards/${cardId}`)
+    const request = await fetch(`${PATH}/cards/${cardId}`, {
+      method: "DELETE",
+      headers: {
+        authorization,
+      }
+    })
+    return handleRequest(request)
   }
   catch(err) {
-    console.err("Не удалось удалить карточку", err)
+    console.err('Не удалось удалить карточку', err)
+    throw err;
   }
 }
 
-
-
+const updateUserAvatar = async (userAvatarLink) => {
+  try {
+    const request = await fetch(`${PATH}/users/me/avatar`, {
+      method: "PATCH",
+      headers: {
+        authorization
+      },
+      body: {
+        avatar: userAvatarLink
+      }
+    })
+    return handleRequest(request)
+  }
+  catch(err) {
+    console.err('Не удалось загрузить аватар', err)
+    throw err;
+  }
+}
 
 const handleRequest = async (request) => {
   if (request.ok) {
     return await request.json();
   } else {
-    const errorMessage = `Ошибка: ${request.status} - ${request.statusText}`;
-    throw new Error(errorMessage);
+    
   }
 };
 
 
-export { getAllCards, getUserInfo, patchUserInfo, postCard, updateLikeStatus, deleteCard};
+export { getAllCards, getUserInfo, updateUserInfo, postCard, updateLikeStatus, deleteCard, updateUserAvatar};
