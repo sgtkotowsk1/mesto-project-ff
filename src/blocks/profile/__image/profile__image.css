@@ -8,39 +8,45 @@
   background-size: cover;
   background-position: center;
   margin: 0 29px 0 0;
+  display: block;
+  outline: none;
+  border: none;
 }
 
-.profile__image::before {
-  content: ''; 
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5); 
-    opacity: 0; 
-    transition: opacity 0.3s ease;
+.profile__image:hover {
+  cursor: pointer;
+}
+
+.profile__image:hover::backdrop {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .profile__image::after {
-  content: url(../../../images/pensil.svg); 
+  content: url(../../../images/pensil.svg);
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 30px; 
+  width: 30px;
   height: 30px;
-  opacity: 0; 
-  transition: opacity 0.3s ease; 
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-
 .profile__image:hover::before {
-  opacity: 1; 
+  opacity: 1;
 }
 
 .profile__image:hover::after {
-  opacity: 1; 
+  opacity: 1;
 }
 
 @media screen and (max-width: 740px) {
