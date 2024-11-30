@@ -1,18 +1,38 @@
+import { updateLikeStatus, deleteCard } from "./api";
+
+const handleLikeClick = async (evt, cardId, likeCountElement) => {
+  const likeButton = evt.target;
+  const isLiked = likeButton.classList.contains("card__like-button_is-active");
+  try {
+    const cardData = await updateLikeStatus(cardId, isLiked);
+    likeButton.classList.toggle("card__like-button_is-active");
+    likeCountElement.textContent = cardData.likes.length;
+  } catch (err) {
+    console.error("Ошибка при выставлении лайка", err);
+  }
+};
+
+const handleRemoveCard = async (cardId, cardElement) => {
+  try {
+    await deleteCard(cardId);
+    cardElement.remove();
+  } catch (err) {
+    console.error("Ошибка загрузки данных", err);
+  }
+};
+
 const createCard = (cardData) => {
   const {
     name,
     link,
-    handleRemoveCard,
     openImagePopup,
-    handleLikeClick,
     cardTemplate,
     cardId,
-    cardLike,
+    cardLikes,
     cardOwner,
     currentUserId,
   } = cardData;
 
-  
   const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
   const deleteButton = cardElement.querySelector(".card__delete-button");
   const likeButton = cardElement.querySelector(".card__like-button");
@@ -23,9 +43,9 @@ const createCard = (cardData) => {
   cardElement.setAttribute("card-id", cardId);
   cardImageElement.src = link;
   cardImageElement.alt = name;
-  likeCountElement.textContent = cardLike.length;
+  likeCountElement.textContent = cardLikes.length;
 
-  if (cardLike.find((userLike) => userLike._id === currentUserId)) {
+  if (cardLikes.find((userLike) => userLike._id === currentUserId)) {
     likeButton.classList.add("card__like-button_is-active");
   }
 
@@ -50,4 +70,4 @@ const createCard = (cardData) => {
   return cardElement;
 };
 
-export { createCard };
+export { createCard, handleLikeClick, handleRemoveCard };
